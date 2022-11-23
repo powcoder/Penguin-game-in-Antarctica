@@ -1,0 +1,1142 @@
+https://powcoder.com
+代写代考加微信 powcoder
+Assignment Project Exam Help
+Add WeChat powcoder
+package pgdp.oop;
+
+import java.awt.Color;
+import java.awt.GradientPaint;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.RenderingHints;
+import java.awt.Toolkit;
+import java.io.File;
+
+public abstract class Animal {
+  protected int x, y;
+  static String filename;
+  protected File f;
+  protected Image image;
+  protected boolean alive;
+
+  protected static Animal[][] antarktis;
+
+  public Animal(int x, int y) {
+    this.x = x;
+    this.y = y;
+  }
+
+  public void move() {
+
+    //TODO
+    if (alive) {
+      if (antarktis[(x - 1 + 41) % 41][y] != null || antarktis[x][(y - 1 + 41) % 41] != null ||
+              antarktis[(x + 1) % 41][y] != null || antarktis[x][(y + 1) % 41] != null ) {
+        //left
+        if(canEat(antarktis[(x - 1 + 41) % 41][y]) && !antarktis[(x - 1 + 41) % 41][(y + 1) % 41].canEat(this)
+                && !antarktis[(x - 2 + 41) % 41][y].canEat(this)
+                && !antarktis[(x - 1 + 41) % 41][(y - 1 + 41) % 41].canEat(this)) {
+          antarktis[(x - 1 + 41) % 41][y].alive = false;
+          x = (x - 1 + 41) % 41;
+        }
+        //up
+        else if (canEat(antarktis[x][(y - 1 + 41) % 41]) && !antarktis[x][(y - 2 + 41) % 41].canEat(this)
+                && !antarktis[(x - 1 + 41) % 41][(y - 1 + 41) % 41].canEat(this)
+                && !antarktis[(x - 1 + 41) % 41][(y + 1) % 41].canEat(this)) {
+          antarktis[x][y - 1].alive = false;
+          y = (y - 1 + 41) % 41;
+        }
+        //right
+        else if (canEat(antarktis[(x + 1) % 41][y]) && !antarktis[(x + 2) % 41][y].canEat(this)
+                && !antarktis[(x + 1) % 41][(y + 1) % 41].canEat(this)
+                && !antarktis[(x + 1) % 41][(y - 1 + 41) % 41].canEat(this)) {
+          antarktis[(x + 1) % 41][y].alive = false;
+          x = (x + 1) % 41;
+        }
+        //down
+        else if (canEat(antarktis[x][(y + 1) % 41]) && !antarktis[x][(y + 2) % 41].canEat(this)
+                && !antarktis[(x - 1 + 41) % 41][(y + 1) % 41].canEat(this)
+                && !antarktis[(x + 1) % 41][(y + 1) % 41].canEat(this)) {
+          antarktis[(x + 1) % 41][y].alive = false;
+          y = (y + 1) % 41;
+        }
+      }
+      else if (antarktis[(x - 1 + 41) % 41][y] == null || antarktis[x][(y - 1 + 41) % 41] == null ||
+              antarktis[(x + 1) % 41][y] == null || antarktis[x][(y + 1) % 41] == null) {
+        //left
+        if (antarktis[(x - 1 + 41) % 41][y] == null
+                && !antarktis[(x - 1 + 41) % 41][(y + 1) % 41].canEat(this)
+                && !antarktis[(x - 2 + 41) % 41][y].canEat(this)
+                && !antarktis[(x - 1 + 41) % 41][(y - 1 + 41) % 41].canEat(this)) {
+          x = x - 1;
+        }
+        //up
+        else if (antarktis[x][(y - 1 + 41) % 41] == null && !antarktis[x][(y - 2 + 41) % 41].canEat(this)
+                && !antarktis[(x - 1 + 41) % 41][(y - 1 + 41) % 41].canEat(this)
+                && !antarktis[(x - 1 + 41) % 41][(y + 1) % 41].canEat(this)) {
+          y = (y - 1 + 41) % 41;
+        }
+        //right
+        else if (antarktis[(x + 1) % 41][y] == null && !antarktis[(x + 2) % 41][y].canEat(this)
+                && !antarktis[(x + 1) % 41][(y + 1) % 41].canEat(this)
+                && !antarktis[(x + 1) % 41][(y - 1 + 41) % 41].canEat(this)) {
+          x = (x + 1) % 41;
+        }
+        //down
+        else if (antarktis[x][(y + 1) % 41] == null && !antarktis[x][(y + 2) % 41].canEat(this)
+                && !antarktis[(x - 1 + 41) % 41][(y + 1) % 41].canEat(this)
+                && !antarktis[(x + 1) % 41][(y + 1) % 41].canEat(this)) {
+          y = (y + 1) % 41;
+        }
+      }
+      else {
+        x = x;
+        y = y;
+      }
+    }
+  }
+
+  public abstract boolean canEat(Animal animal);
+
+  protected abstract boolean eatenBy(Penguin penguin);
+  protected abstract boolean eatenBy(PlayerPenguin playerPenguin);
+  protected abstract boolean eatenBy(Whale whale);
+  protected abstract boolean eatenBy(LeopardSeal leopardSeal);
+  protected abstract boolean eatenBy(Fish fish);
+
+  public static void setAntarktis(Animal[][] antarktis) {
+    Animal.antarktis = antarktis;
+  }
+  // Graphics Stuff - You don't have to do anything here
+
+  private void paintSymbol(Graphics g, Color c, int height, int width) {
+    GradientPaint gradient = new GradientPaint(15, 0, c, width, 0, Color.LIGHT_GRAY);
+    ((Graphics2D) g).setPaint(gradient);
+    ((Graphics2D) g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+    g.fillOval((int) (width * 0.3), (int) (height * 0.3), (int) (width * 0.5),
+        (int) (height * 0.5));
+  }
+
+  public void draw(Graphics g, int height, int width) {
+    if (image == null) {
+      paintSymbol(g, Color.YELLOW, height, width);
+      return;
+    }
+    ((Graphics2D) g).drawImage(image, 0, 0, width, height, 0, 0, image.getWidth(null),
+        image.getHeight(null), null);
+  }
+}
+package pgdp.oop;
+
+import java.awt.event.WindowEvent;
+
+public class Antarktis extends Maze {
+    private static int width, height;
+    private static Penguin lostPenguin;
+    private static Whale[] whales = new Whale[5];
+    private static LeopardSeal[] leopardSeals = new LeopardSeal[20];
+    private static Fish[] fishes = new Fish[500];
+    private static PlayerPenguin playerPenguin;
+
+    public static void main(String[] args) {
+        width = 41;
+        height = 41;
+        antarktis = generateMaze(width, height);
+        setupMaze();
+        draw();
+        gameLoop();
+        // Close the opnend frame
+        closeFrame();
+
+
+    }
+
+    private static void gameLoop() {
+        boolean end = false;
+        while (!end) {
+            // TODO maybe
+            draw();
+            // TODO maybe
+            if (currentEvent == UP) {
+                end = playerPenguin.move(playerPenguin.x, playerPenguin.y - 1);
+
+            }
+            else if (currentEvent == DOWN) {
+                end = playerPenguin.move(playerPenguin.x, playerPenguin.y + 1);
+            }
+            else if (currentEvent == LEFT) {
+                end = playerPenguin.move(playerPenguin.x - 1, playerPenguin.y);
+            }
+            else if (currentEvent == RIGHT) {
+                end = playerPenguin.move(playerPenguin.x + 1, playerPenguin.y);
+            }
+            if (end) return;
+            else moveAll();
+            currentEvent = NOTHING;
+
+
+            // TODO maybe
+        }
+    }
+
+    private static void moveAll() {
+        // TODO
+        //playerPenguin.move()
+        for (int i = 0; i < whales.length; i++) {
+            whales[i].move();
+        }
+        for (int i = 0; i < leopardSeals.length; i++) {
+            leopardSeals[i].move();
+        }
+        lostPenguin.move();
+        for (int i = 0; i < fishes.length; i ++) {
+            fishes[i].move();
+        }
+    }
+
+    /**
+     * Example Setup for easier Testing during development
+     */
+    private static void setupMaze() {
+        int[] pos;
+        playerPenguin = new PlayerPenguin(3, 3);
+        antarktis[3][3] = playerPenguin;
+
+        for (int i = 0; i < whales.length; i++) {
+            pos = getRandomEmptyField();
+            whales[i] = new Whale(pos[0], pos[1]);
+            antarktis[pos[0]][pos[1]] = whales[i];
+        }
+
+        for (int i = 0; i < leopardSeals.length; i++) {
+            pos = getRandomEmptyField();
+            leopardSeals[i] = new LeopardSeal(pos[0], pos[1]);
+            antarktis[pos[0]][pos[1]] = leopardSeals[i];
+        }
+
+        for (int i = 0; i < fishes.length; i++) {
+            pos = getRandomEmptyField();
+            fishes[i] = new Fish(pos[0], pos[1]);
+            antarktis[pos[0]][pos[1]] = fishes[i];
+        }
+
+        antarktis[20][20] = new Penguin(20, 20);
+        lostPenguin = (Penguin) antarktis[20][20];
+    }
+}
+package pgdp.oop;
+
+import java.awt.Toolkit;
+import java.io.File;
+
+public class Fish extends Animal {
+  static String filename = "fish.png";
+
+  public Fish(int x, int y) {
+    super(x, y);
+
+    f = new File(filename);
+    image = Toolkit.getDefaultToolkit().getImage(f.getAbsolutePath());
+  }
+
+  public void move() {
+//TODO
+    if (alive) {
+      if (antarktis[(x - 1 + 41) % 41][y] == null || antarktis[x][(y - 1 + 41) % 41] == null ||
+              antarktis[(x + 1) % 41][y] == null || antarktis[x][(y + 1) % 41] == null) {
+        //up
+        if (antarktis[x][(y - 1 + 41) % 41] == null && !antarktis[x][(y - 2 + 41) % 41].canEat(this)
+                && !antarktis[(x - 1 + 41) % 41][(y - 1 + 41) % 41].canEat(this)
+                && !antarktis[(x - 1 + 41) % 41][(y + 1) % 41].canEat(this)) {
+          y = (y - 1 + 41) % 41;
+        }
+        //right
+        else if (antarktis[(x + 1) % 41][y] == null && !antarktis[x + 2][y].canEat(this)
+                && !antarktis[(x + 1) % 41][(y + 1) % 41].canEat(this)
+                && !antarktis[(x + 1) % 41][(y - 1 + 41) % 41].canEat(this)) {
+          x = (x + 1) % 41;
+        }
+        //down
+        else if (antarktis[x][(y + 1) % 41] == null && !antarktis[x][(y + 2) % 41].canEat(this)
+                && !antarktis[(x - 1 + 41) % 41][(y + 1) % 41].canEat(this)
+                && !antarktis[(x + 1) % 41][(y + 1) % 41].canEat(this)) {
+          y = (y + 1) % 41;
+        }
+        //left
+        else if (antarktis[(x - 1 + 41) % 41][y] == null
+                && !antarktis[(x - 1 + 41) % 41][(y + 1) % 41].canEat(this)
+                && !antarktis[(x - 2 + 41) % 41][y].canEat(this)
+                && !antarktis[(x - 1 + 41) % 41][(y - 1 + 41) % 41].canEat(this)) {
+          x = (x - 1 + 41) % 41;
+        }
+        else {
+          x = x;
+          y = y;
+        }
+      }
+    }
+
+  }
+
+  public boolean canEat(Animal animal) {
+    return animal.eatenBy(this);
+  }
+
+  protected boolean eatenBy(Penguin penguin) {
+    this.alive = false;
+    antarktis[x][y] = null;
+    return true;
+  }
+  protected boolean eatenBy(PlayerPenguin playerPenguin) {
+    this.alive = false;
+    antarktis[x][y] = null;
+    return true;
+  }
+  protected boolean eatenBy(Whale whale){
+    return false;
+  }
+  protected boolean eatenBy(LeopardSeal leopardSeal){
+    this.alive = false;
+    antarktis[x][y] = null;
+    return true;
+  }
+  protected boolean eatenBy(Fish fish) {
+    return false;
+  }
+}
+package pgdp.oop;
+
+import java.awt.Toolkit;
+import java.io.File;
+
+public class LeopardSeal extends Animal {
+  static String filename = "leopard.png";
+
+  public LeopardSeal(int x, int y) {
+    super(x, y);
+
+    f = new File(filename);
+    image = Toolkit.getDefaultToolkit().getImage(f.getAbsolutePath());
+  }
+
+  public boolean canEat(Animal animal) {
+    return animal.eatenBy(this);
+  }
+
+  protected boolean eatenBy(Penguin penguin) {
+    return false;
+  }
+  protected boolean eatenBy(PlayerPenguin playerPenguin) {
+    return false;
+  }
+  protected boolean eatenBy(Whale whale){
+    this.alive = false;
+    antarktis[x][y] = null;
+    return true;
+  }
+  protected boolean eatenBy(LeopardSeal leopardSeal){
+    return false;
+  }
+  protected boolean eatenBy(Fish fish) {
+    return false;
+  }
+}
+
+package pgdp.oop;
+
+import java.awt.Color;
+import java.awt.GradientPaint;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.GridLayout;
+import java.awt.Point;
+import java.awt.RenderingHints;
+import java.awt.event.*;
+import java.util.Random;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+
+public class Maze extends MiniJava {
+    public static boolean draw = true;
+
+    protected static final int NOTHING = -1;
+    protected static final int LEFT = 1;
+    protected static final int UP = 2;
+    protected static final int RIGHT = 3;
+    protected static final int DOWN = 4;
+
+    private static JFrame frame = null;
+    static Animal[][] antarktis;
+    private static int wannaSleep = 100;
+    private static boolean pause = false;
+    private static Random r = new Random();
+    protected static int currentEvent = NOTHING;
+
+
+    @SuppressWarnings("serial")
+    private static class Field extends JPanel {
+        Point p;
+        int x, y;
+
+        public Field(int x, int y) {
+            this.x = x;
+            this.y = y;
+            p = getLocation();
+        }
+
+        public void paint(Graphics g) {
+            super.paint(g);
+            GradientPaint gradient = new GradientPaint(0, 50, Color.WHITE, getWidth(), 0, Color.GRAY);
+            ((Graphics2D) g).setPaint(gradient);
+
+
+            g.fillRect(p.getLocation().x, p.getLocation().y, getWidth() * 2, getHeight());
+
+            if (antarktis[x][y] != null) {
+                antarktis[x][y].draw(g, getWidth(), getHeight());
+            }
+        }
+
+        private void paintSymbol(Graphics g, Color c) {
+            GradientPaint gradient = new GradientPaint(15, 0, c, getWidth(), 0, Color.LIGHT_GRAY);
+            ((Graphics2D) g).setPaint(gradient);
+            ((Graphics2D) g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g.fillOval((int) (getWidth() * 0.3), (int) (getHeight() * 0.3), (int) (getWidth() * 0.5),
+                    (int) (getHeight() * 0.5));
+        }
+
+    }
+
+    private static void setup(int height, int width) {
+
+        JPanel content = new JPanel(new GridLayout(width, height));
+
+        for (int y = 0; y < antarktis[0].length; y++)
+            for (int x = 0; x < antarktis.length; x++) {
+                content.add(new Field(x, y));
+            }
+
+        frame = new JFrame("A-Maze-Ing");
+        frame.getContentPane().add(content);
+        frame.setSize(400, 400 * (antarktis[0].length) / (antarktis.length));
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        frame.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                frame.repaint();
+            }
+        });
+
+        frame.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent ke) {
+                switch (ke.getKeyCode()) {
+                case KeyEvent.VK_LEFT:
+                    currentEvent = LEFT;
+                    break;
+                case KeyEvent.VK_RIGHT:
+                    currentEvent = RIGHT;
+                    break;
+                case KeyEvent.VK_UP:
+                    currentEvent = UP;
+                    break;
+                case KeyEvent.VK_DOWN:
+                    currentEvent = DOWN;
+                    break;
+                default:
+                    break;
+                }
+            }
+        });
+
+        frame.setVisible(true);
+    }
+
+    public static void draw() {
+        if (!draw || antarktis.length == 0)
+            return;
+        if (frame == null)
+            setup(41, 41);
+
+        try {
+            while (pause)
+                Thread.sleep(50);
+            update();
+            Thread.sleep(wannaSleep);
+        } catch (InterruptedException ie) {
+            /* Intentionally left blank */
+        }
+    }
+
+    private static void update() {
+        frame.repaint();
+    }
+
+    public static Animal[][] generateMaze(int width, int height) {
+        Animal[][] maze = new Animal[width][height];
+
+        for (int i = 0; i < maze.length; i++) {
+            for (int j = 0; j < maze[i].length; j++) {
+                maze[i][j] = null;
+            }
+        }
+
+        return maze;
+    }
+
+    public static int[] getRandomEmptyField() {
+        int x, y;
+        do {
+            x = r.nextInt(41);
+            y = r.nextInt(41);
+        } while (antarktis[x][y] != null);
+        return new int[]{x, y};
+    }
+
+    public static void closeFrame() {
+        frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
+    }
+}
+package pgdp.oop;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UncheckedIOException;
+import java.util.Random;
+
+/**
+ * This class provides convenience methods to make the barrier of entry into
+ * programming easier. In addition to that it realizes an educational
+ * sub-language to Java called "Mini Java" with simpler grammar.
+ * <p>
+ * <i>Diese Klasse stellt simple Methoden zur Verfügung um den Einstieg in die
+ * Programmierung zu vereinfachen. Zusätzlich dazu wird damit eine für die Lehre
+ * zusammengestellte Sub-Programmiersprache von Java umgesetzt, die sich "Mini
+ * Java" nennt und eine einfachere Grammatik besitzt</i>
+ */
+public class MiniJava {
+  private static Random rand;
+  private static InputStream is = System.in;
+  private static BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(is));
+
+  /**
+   * Reads a {@link String} from the console, and prompts the user by printing the
+   * given <code>text</code> with a line break to the console.
+   * <p>
+   *
+   * <i>Liest einen {@link String} von der Konsole ein, und fordert den oder die
+   * Benutzerin durch die Ausgabe des übergebenen <code>text</code>es zur Eingabe
+   * auf (mit Zeilenumbruch).</i>
+   *
+   * @param text the text to display on the console before reading an input.
+   * @return the input string or <code>null</code>, if no input is available
+   *         (should normally not happen)
+   */
+  public static String readString(String text) {
+    // Exchange the reader in case System.in has changed.
+    // This is necessary for testing, as for every test input, System.in is changed.
+    // TODO: Consider whether a better solution is possible with mocking/a different
+    // InputStream implementation
+    // on the test side.
+    if (System.in != is) {
+      is = System.in;
+      bufferedReader = new BufferedReader(new InputStreamReader(is));
+    }
+    try {
+      System.out.println(text);
+      return bufferedReader.readLine();
+    } catch (IOException e) {
+      // We "hide" the exception in the method signature by rethrowing an unchecked
+      // exception
+      throw new UncheckedIOException("Konnte Eingabe nicht lesen.", e);
+    }
+  }
+
+  /**
+   * Reads a {@link String} from the console, and prompts the user by printing the
+   * line
+   *
+   * <pre>
+   * Eingabe:
+   * </pre>
+   *
+   * <i>Liest einen {@link String} von der Konsole ein, und fordert den oder die
+   * Benutzerin dazu auf durch die Ausgabe von
+   *
+   * <pre>
+   * Eingabe:
+   * </pre>
+   *
+   * </i>
+   */
+  public static String readString() {
+    return readString("Eingabe:");
+  }
+
+  /**
+   * Tries to read an <code>int</code> from the console, and retires if the input
+   * was not a valid integer. It prompts the user by printing the given
+   * <code>text</code> with a line break to the console.
+   * <p>
+   * <i>Versucht einen <code>int</code>-Wert von der Konsole einzulesen, und
+   * wiederholt die Anfrage solange es nicht nicht um eine ganze Zahl handelt. Der
+   * oder die Benutzerin wird durch die Ausgabe des übergebenen
+   * <code>text</code>es zur Eingabe aufgefordert (mit Zeilenumbruch).</i>
+   *
+   * @see Integer#parseInt(String)
+   */
+  public static int readInt(String text) {
+    Integer x = null;
+    do {
+      String s = readString(text);
+      if (s == null)
+        throw new IllegalStateException("Es ist keine Eingabe (mehr) verfügbar.");
+      try {
+        x = Integer.parseInt(s.trim());
+      } catch (@SuppressWarnings("unused") NumberFormatException e) {
+        // try again
+      }
+    } while (x == null);
+    return x;
+  }
+
+  /**
+   * Works like {@link #readInt(String)}, but uses the following preset text to
+   * prompt the user:
+   *
+   * <pre>
+   * Geben Sie eine ganze Zahl ein:
+   * </pre>
+   *
+   * <i>Funktioniert wie {@link #readInt(String)}, nutzt jedoch folgenden
+   * vorgegebenen Text:
+   *
+   * <pre>
+   * Geben Sie eine ganze Zahl ein:
+   * </pre>
+   *
+   * </i>
+   */
+  public static int readInt() {
+    return readInt("Geben Sie eine ganze Zahl ein:");
+  }
+
+  /**
+   * Identical to {@link #readInt(String)}.
+   * <p>
+   * <i>Identisch zu {@link #readInt(String)}</i>
+   */
+  public static int read(String text) {
+    return readInt(text);
+  }
+
+  /**
+   * Identical to {@link #readInt()}.
+   * <p>
+   * <i>Identisch zu {@link #readInt()}</i>
+   */
+  public static int read() {
+    return readInt();
+  }
+
+  /**
+   * Tries to read an <code>double</code> from the console, and retires if the
+   * input was not a valid double value. It prompts the user by printing the given
+   * <code>text</code> with a line break to the console.
+   * <p>
+   * <i>Versucht einen <code>double</code>-Wert von der Konsole einzulesen, und
+   * wiederholt die Anfrage solange es nicht nicht um eine gültige
+   * <code>double</code>-Fließkommazahl handelt. Der oder die Benutzerin wird
+   * durch die Ausgabe des übergebenen <code>text</code>es zur Eingabe
+   * aufgefordert (mit Zeilenumbruch).</i>
+   *
+   * @see Double#parseDouble(String)
+   */
+  public static double readDouble(String text) {
+    Double x = null;
+    do {
+      String s = readString(text);
+      if (s == null)
+        throw new IllegalStateException("Es ist keine Eingabe (mehr) verfügbar.");
+      try {
+        x = Double.parseDouble(s.trim());
+      } catch (@SuppressWarnings("unused") NumberFormatException e) {
+        // try again
+      }
+    } while (x == null);
+    return x;
+  }
+
+  /**
+   * Works like {@link #readDouble(String)}, but uses the following preset text to
+   * prompt the user:
+   *
+   * <pre>
+   * Geben Sie eine Zahl ein:
+   * </pre>
+   *
+   * <i>Funktioniert wie {@link #readDouble(String)}, nutzt jedoch folgenden
+   * vorgegebenen Text:
+   *
+   * <pre>
+   * Geben Sie eine Zahl ein:
+   * </pre>
+   *
+   * </i>
+   */
+  public static double readDouble() {
+    return readDouble("Geben Sie eine Zahl ein:");
+  }
+
+  /**
+   * Prints the {@link String} to the console and breaks the line.
+   * <p>
+   * <i>Gibt den {@link String} auf der Konsole aus und beginnt eine neue
+   * Zeile.</i>
+   */
+  public static void write(String output) {
+    System.out.println(output);
+  }
+
+  /**
+   * Prints the <code>int</code> to the console and breaks the line.
+   * <p>
+   * <i>Gibt den <code>int</code>-Wert auf der Konsole aus und beginnt eine neue
+   * Zeile.</i>
+   */
+  public static void write(int output) {
+    write("" + output);
+  }
+
+  /**
+   * Prints the <code>double</code> to the console and breaks the line.
+   * <p>
+   * <i>Gibt den <code>double</code>-Wert auf der Konsole aus und beginnt eine
+   * neue Zeile.</i>
+   */
+  public static void write(double output) {
+    write("" + output);
+  }
+
+  /**
+   * Identical to {@link #write(String)}.
+   * <p>
+   * <i>Identisch zu {@link #write(String)}</i>
+   */
+  public static void writeLineConsole(String output) {
+    System.out.println(output);
+  }
+
+  /**
+   * Identical to {@link #write(int)}.
+   * <p>
+   * <i>Identisch zu {@link #write(int)}</i>
+   */
+  public static void writeLineConsole(int output) {
+    writeLineConsole("" + output);
+  }
+
+  /**
+   * Identical to {@link #write(double)}.
+   * <p>
+   * <i>Identisch zu {@link #write(double)}</i>
+   */
+  public static void writeLineConsole(double output) {
+    writeLineConsole("" + output);
+  }
+
+  /**
+   * Prints a line separator in the console.
+   * <p>
+   * <i>Gibt einen Zeilenumbruch auf der Konsole aus.</i>
+   */
+  public static void writeLineConsole() {
+    writeLineConsole("");
+  }
+
+  /**
+   * Prints the {@link String} to the console. Does not end with a line break.
+   * <p>
+   * <i>Gibt den {@link String} auf der Konsole aus. Endet nicht mit einem
+   * Zeilenumbruch.</i>
+   */
+  public static void writeConsole(String output) {
+    System.out.print(output);
+  }
+
+  /**
+   * Prints the <code>int</code> to the console. Does not end with a line break.
+   * <p>
+   * <i>Gibt den <code>int</code>-Wert auf der Konsole aus. Endet nicht mit einem
+   * Zeilenumbruch.</i>
+   */
+  public static void writeConsole(int output) {
+    writeConsole("" + output);
+  }
+
+  /**
+   * Prints the <code>double</code> to the console. Does not end with a line
+   * break.
+   * <p>
+   * <i>Gibt den <code>double</code>-Wert auf der Konsole aus. Endet nicht mit
+   * einem Zeilenumbruch.</i>
+   */
+  public static void writeConsole(double output) {
+    writeConsole("" + output);
+  }
+
+  public static void resetRandom() {
+    rand = null;
+  }
+
+  public static void setRandomWithSeed(int seed) throws IllegalAccessException {
+    if (rand != null) {
+      throw new IllegalAccessException("Don't touch this");
+    }
+    rand = new Random(seed);
+  }
+
+  public static void setRandom() throws IllegalAccessException {
+    setRandomWithSeed(144);
+  }
+
+  public static int randomInt(int minval, int maxval) {
+    return minval + rand.nextInt(maxval - minval + 1);
+  }
+
+  /**
+   * Draws a random card, represented by its value. The value ranges from 2
+   * (inclusive) to 11 (inclusive).
+   * <p>
+   * <i>Zieht eine zufällige Karte, repräsentiert durch ihren Wert. Der Wert liegt
+   * im Bereich 2 (inklusive) bis 11 (inklusive).</i>
+   */
+  public static int drawCard() {
+    return randomInt(2, 11);
+  }
+
+  /**
+   * Returns a random integer between 1 (inclusive) to 6 (inclusive).
+   * <p>
+   * <i>Gibt eine zufällige Zahl zwischen 1 (inklusive) bis 6 (inklusive)
+   * zurück.</i>
+   */
+  public static int dice() throws IllegalAccessException {
+    if (rand == null) {
+      setRandom();
+    }
+    return randomInt(1, 6);
+  }
+}package pgdp.oop;
+
+import java.awt.Toolkit;
+import java.io.File;
+
+public class Penguin extends Animal {
+  static String filename = "tux.png";
+
+  public Penguin(int x, int y) {
+    super(x, y);
+
+    f = new File(filename);
+    image = Toolkit.getDefaultToolkit().getImage(f.getAbsolutePath());
+  }
+
+  public boolean canEat(Animal animal) {
+    return animal.eatenBy(this);
+  }
+
+  protected boolean eatenBy(Penguin penguin) {
+    return false;
+  }
+  protected boolean eatenBy(PlayerPenguin playerPenguin) {
+    return false;
+  }
+  protected boolean eatenBy(Whale whale){
+    this.alive = false;
+    antarktis[x][y] = null;
+    return true;
+  }
+  protected boolean eatenBy(LeopardSeal leopardSeal){
+    this.alive = false;
+    antarktis[x][y] = null;
+    return true;
+  }
+  protected boolean eatenBy(Fish fish) {
+    return false;
+  }
+}
+package pgdp.oop;
+
+public class PlayerPenguin extends Penguin {
+    public PlayerPenguin(int x, int y) {
+        super(x, y);
+    }
+
+    public boolean canEat(Animal animal) {
+        return animal.eatenBy(this);
+    }
+
+    //TODO
+    public boolean move(int newX, int newY) {
+        //game continues
+        if (antarktis[newX][newY] == null || this.canEat(antarktis[newX][newY])) {
+            this.x = newX;
+            this.y = newY;
+            return false;
+        }
+        //win
+        else if (antarktis[newX][newY].getClass().isAssignableFrom(Penguin.class)) {
+            this.x = newX;
+            this.y = newY;
+            return true;
+        }
+        //lose
+        else {
+            this.x = newX;
+            this.y = newY;
+            return true;
+        }
+
+    }
+}
+package pgdp.oop;
+
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
+import static pgdp.oop.Antarktis.antarktis;
+
+public class TestMovePlayer {
+    private static final TestPlayer[] tests = new TestPlayer[] {
+            () -> {
+                System.out.println("Feld:");
+                System.out.println("pp");
+                System.out.println("pp.move(0, 1);");
+
+                var player = add(new PlayerPenguin(0, 0));
+
+                var returnVal = player.move(0, 1);
+
+                assert antarktis[0][1] == player : "Spieler steht nicht auf [0][1], sondern auf " + realPos(player) + ".";
+                assert player.x == 0 && player.y == 1
+                        : "x- und y-Attribut des Pinguins sind falsch. [0][1] erwartet, ist jedoch " + pos(player) + ".";
+                assert antarktis[0][0] == null : "[0][0] ist nicht leer.";
+                assert !returnVal : "Rückgabewert ist nicht false.";
+            },
+            () -> {
+                System.out.println("Feld:");
+                System.out.println("pp");
+                System.out.println("pp.move(31, 4);");
+
+                var player = add(new PlayerPenguin(0, 0));
+
+                var returnVal = player.move(31, 4);
+
+                assert antarktis[31][4] == player : "Spieler steht nicht auf [31][4], sondern auf " + realPos(player) +
+                        ". Teleportation soll möglich sein.";
+                assert player.x == 31 && player.y == 4
+                        : "x- und y-Attribut des Pinguins sind falsch. [31][4] erwartet, ist jedoch " + pos(player) +
+                        ". Teleportation soll möglich sein.";
+                assert antarktis[0][0] == null : "[0][0] ist nicht leer.";
+                assert !returnVal : "Rückgabewert ist nicht false.";
+            },
+            () -> {
+                System.out.println("Feld:");
+                System.out.println("pp - p");
+                System.out.println("pp.move(2, 0);");
+
+                var player = add(new PlayerPenguin(0, 0));
+                add(new Penguin(2, 0));
+
+                var returnVal = player.move(2, 0);
+
+                assert returnVal : "Rückgabewert ist nicht true.";
+            },
+            () -> {
+                System.out.println("Feld:");
+                System.out.println("pp - s w");
+                System.out.println("pp.move(2, 0);");
+
+                var player = add(new PlayerPenguin(0, 0));
+                add(new LeopardSeal(2, 0));
+                add(new Whale(3, 0));
+
+                var returnVal = player.move(2, 0);
+
+                assert returnVal : "Rückgabewert ist nicht true.";
+            },
+            () -> {
+                System.out.println("Feld:");
+                System.out.println("pp - w");
+                System.out.println("pp.move(2, 0);");
+
+                var player = add(new PlayerPenguin(0, 0));
+                add(new Whale(2, 0));
+
+                var returnVal = player.move(2, 0);
+
+                assert returnVal : "Rückgabewert ist nicht true.";
+            },
+            () -> {
+                System.out.println("Feld:");
+                System.out.println("pp - f w");
+                System.out.println("pp.move(2, 0);");
+
+                var player = add(new PlayerPenguin(0, 0));
+                var fish = add(new Fish(2, 0));
+                add(new Whale(3, 0));
+
+                var returnVal = player.move(2, 0);
+
+                assert antarktis[2][0] == player : "Spieler steht nicht auf [2][0], sondern auf " + realPos(player) + ".";
+                assert player.x == 2 && player.y == 0
+                        : "x- und y-Attribut des Pinguins sind falsch. [2][0] erwartet, ist jedoch " + pos(player) + ".";
+                assert antarktis[0][0] == null : "[0][0] ist nicht leer.";
+                assert !fish.alive : "Der Fisch ist nicht tot.";
+                assert !returnVal : "Rückgabewert ist nicht false.";
+            },
+            () -> {
+                System.out.println("Feld:");
+                System.out.println("pp");
+                System.out.println("pp.move(314, 159);");
+
+                var player = add(new PlayerPenguin(0, 0));
+
+                try {
+                    player.move(314, 159);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    assert false : "Obige Exception trat beim Testen mit einer Position außerhalb des Spielfeldes auf.";
+                }
+            }
+    };
+
+    private static Animal add(Animal animal) {
+        antarktis[animal.x][animal.y] = animal;
+        return animal;
+    }
+
+    private static PlayerPenguin add(PlayerPenguin player) {
+        antarktis[player.x][player.y] = player;
+        return player;
+    }
+
+    private static String pos(Animal animal) {
+        return "[" + animal.x + "][" + animal.y + "]";
+    }
+
+    private static String realPos(Animal animal) {
+        for (int x = 0; x < antarktis.length; ++x) {
+            for (int y = 0; y < antarktis.length; ++y) {
+                if (antarktis[x][y] == animal) return "[" + x + "][" + y + "]";
+            }
+        }
+
+        return "gar keinem Feld";
+    }
+
+    private static void timeout() {
+        new TimeoutException("Das dauert zu lange! Test abgebrochen. 2 Sekunden reichen für den Test aus.").printStackTrace();
+        System.exit(1);
+    }
+
+    public static void main(String[] args) {
+        boolean ea = false;
+        assert ea = true;
+        if (!ea) throw new UnsupportedOperationException("Du hast Assertions nicht aktiviert, " +
+                "obwohl diese für diesen Test erforderlich sind. Füge zu deinen JVM-Optionen die Option -ea hinzu. " +
+                "Wie das geht, ist in der pgdp-tests-Discussion beschrieben.");
+
+        System.out.println("Diese Tests testen public boolean move(int newX, int newY) anhand mehrerer Beispiele.");
+        System.out.println("Schlägt ein Test fehl, bricht das Programm sofort ab " +
+                "und alle weiteren Tests werden nicht ausgeführt.");
+        System.out.println("Keine Garantie auf Vollständigkeit und Richtigkeit!");
+        System.out.println("Erstellt von Max Schröder :)");
+        System.out.println("Der Test startet nun und wird maximal 2 Sekunden laufen.");
+        System.out.println();
+
+        ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+        executor.schedule(TestMovePlayer::timeout, 2, TimeUnit.SECONDS);
+
+        try {
+            for (int i = 0; i < tests.length; ++i) {
+                System.out.println("*** Test " + (i + 1) + " ***");
+                antarktis = Antarktis.generateMaze(41, 41);
+                Animal.setAntarktis(antarktis);
+                tests[i].test();
+                System.out.println("OK");
+                System.out.println();
+            }
+        } finally {
+            executor.shutdownNow();
+        }
+
+        System.out.println("        /@@@@@@@\\\n" +
+                "      (@@@@@ # @@@@@\\\n" +
+                "     (` \\@@@@@@@@~~~~\n" +
+                "    /`    \\@@@@@|\n" +
+                "   /@@     ''''  \\\n" +
+                "  /@@@@\\          |\n" +
+                " /@@@@@@@\\        |\n" +
+                "/@@@@@@@@@        |\n" +
+                "|@@@@@@@@         |\n" +
+                "|@@@@@@@          |\n" +
+                "|@@@@@@@          |\n" +
+                "|@@@'@@@@        |\n" +
+                "|@@@ '@@@        ;\n" +
+                "|@@@  @@;       ;\n" +
+                "|@@@  ''       ;\n" +
+                "(@@@@         ;\n" +
+                " (@@@@        |\n" +
+                "  (__@@_______)");
+        System.out.println();
+        System.out.println("### Glückwunsch: Alle Tests bestanden! ###");
+        System.out.println("### ACHTUNG: Diese Tests garantieren nicht, dass Dein Code fehlerfrei ist! ###");
+    }
+}
+
+interface TestPlayer {
+    void test();
+}package pgdp.oop;
+
+import java.awt.Toolkit;
+import java.io.File;
+
+public class Whale extends Animal {
+  static String filename = "whale.png";
+
+  public Whale(int x, int y) {
+    super(x, y);
+
+    f = new File(filename);
+    image = Toolkit.getDefaultToolkit().getImage(f.getAbsolutePath());
+  }
+
+  public boolean canEat(Animal animal) {
+    return animal.eatenBy(this);
+  }
+
+  protected boolean eatenBy(Penguin penguin) {
+    return false;
+  }
+  protected boolean eatenBy(PlayerPenguin playerPenguin) {
+    return false;
+  }
+  protected boolean eatenBy(Whale whale){
+    return false;
+  }
+  protected boolean eatenBy(LeopardSeal leopardSeal){
+    return false;
+  }
+  protected boolean eatenBy(Fish fish) {
+    return false;
+  }
+}
